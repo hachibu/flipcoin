@@ -1,0 +1,27 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "web_lib",
+    srcs = [
+        "handlers.go",
+        "middleware.go",
+        "price_chart.go",
+        "server.go",
+        "util.go",
+    ],
+    data = [
+        "//internal/web/assets",
+        "//internal/web/views",
+    ],
+    importpath = "github.com/hachibu/flipcoin/internal/web",
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "//internal/config",
+        "@com_github_gin_contrib_sessions//:sessions",
+        "@com_github_gin_contrib_sessions//cookie",
+        "@com_github_gin_gonic_gin//:gin",
+        "@com_github_ulule_limiter_v3//:limiter",
+        "@com_github_ulule_limiter_v3//drivers/middleware/gin",
+        "@com_github_ulule_limiter_v3//drivers/store/memory",
+    ],
+)

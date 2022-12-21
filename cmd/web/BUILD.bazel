@@ -1,0 +1,46 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("@io_bazel_rules_docker//go:image.bzl", "go_image")
+load("@io_bazel_rules_docker//container:container.bzl", "container_push")
+
+go_library(
+    name = "web_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/hachibu/flipcoin/cmd/web",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//internal/config",
+        "//internal/web:web_lib",
+    ],
+)
+
+go_binary(
+    name = "web",
+    embed = [":web_lib"],
+    visibility = ["//visibility:public"],
+)
+
+go_image(
+    name = "image",
+    embed = [":web_lib"],
+    goarch = "amd64",
+    goos = "linux",
+    visibility = ["//visibility:public"],
+)
+
+container_push(
+    name = "image_push",
+    format = "Docker",
+    image = ":image",
+    registry = "index.docker.io",
+    repository = "hachibu/flipcoin",
+    tag = "latest",
+)
+
+container_push(
+    name = "image_push_github",
+    format = "Docker",
+    image = ":image",
+    registry = "ghcr.io",
+    repository = "hachibu/flipcoin",
+    tag = "latest",
+)
